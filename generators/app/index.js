@@ -50,7 +50,7 @@ module.exports = class extends Generator {
             askForType: () => {
                 let extensionType = generator.options['extensionType'];
                 if (extensionType) {
-                    let extensionTypes = ['colortheme', 'language', 'snippets', 'command-ts', 'command-js', 'extensionpack'];
+                    let extensionTypes = ['colortheme', 'language', 'snippets', 'command-ts', 'command-fs', 'command-js', 'extensionpack'];
                     if (extensionTypes.indexOf(extensionType) !== -1) {
                         generator.extensionConfig.type = 'ext-' + extensionType;
                     } else {
@@ -68,10 +68,13 @@ module.exports = class extends Generator {
                         value: 'ext-command-ts'
                     },
                     {
-                        name: 'New Extension (JavaScript)',
-                        value: 'ext-command-js'
+                        name: 'New Extension (F#)',
+                        value: 'ext-command-fs'
                     },
                     {
+                        name: 'New Extension (JavaScript)',
+                        value: 'ext-command-js'
+                    }, {
                         name: 'New Color Theme',
                         value: 'ext-colortheme'
                     },
@@ -339,7 +342,7 @@ module.exports = class extends Generator {
             },
 
             askForGit: () => {
-                if (['ext-command-ts', 'ext-command-js'].indexOf(generator.extensionConfig.type) === -1) {
+                if (['ext-command-ts', 'ext-command-fs', 'ext-command-js'].indexOf(generator.extensionConfig.type) === -1) {
                     return Promise.resolve();
                 }
 
@@ -482,7 +485,7 @@ module.exports = class extends Generator {
             },
 
             askForPackageManager: () => {
-                if (['ext-command-ts', 'ext-command-js', 'ext-localization'].indexOf(generator.extensionConfig.type) === -1) {
+                if (['ext-command-ts', 'ext-command-fs', 'ext-command-js', 'ext-localization'].indexOf(generator.extensionConfig.type) === -1) {
                     return Promise.resolve();
                 }
                 generator.extensionConfig.pkgManager = 'npm';
@@ -537,6 +540,9 @@ module.exports = class extends Generator {
                 break;
             case 'ext-command-ts':
                 this._writingCommandTs();
+                break;
+            case 'ext-command-fs':
+                this._writingCommandFs();
                 break;
             case 'ext-command-js':
                 this._writingCommandJs();
@@ -661,6 +667,30 @@ module.exports = class extends Generator {
 
     // Write Command Extension (TypeScript)
     _writingCommandTs() {
+        let context = this.extensionConfig;
+
+        this.fs.copy(this.sourceRoot() + '/vscode', context.name + '/.vscode');
+        this.fs.copy(this.sourceRoot() + '/src/test', context.name + '/src/test');
+
+        this.fs.copy(this.sourceRoot() + '/vscodeignore', context.name + '/.vscodeignore');
+        if (this.extensionConfig.gitInit) {
+            this.fs.copy(this.sourceRoot() + '/gitignore', context.name + '/.gitignore');
+        }
+        this.fs.copyTpl(this.sourceRoot() + '/README.md', context.name + '/README.md', context);
+        this.fs.copyTpl(this.sourceRoot() + '/CHANGELOG.md', context.name + '/CHANGELOG.md', context);
+        this.fs.copyTpl(this.sourceRoot() + '/vsc-extension-quickstart.md', context.name + '/vsc-extension-quickstart.md', context);
+        this.fs.copyTpl(this.sourceRoot() + '/tsconfig.json', context.name + '/tsconfig.json', context);
+
+        this.fs.copyTpl(this.sourceRoot() + '/src/extension.ts', context.name + '/src/extension.ts', context);
+        this.fs.copyTpl(this.sourceRoot() + '/package.json', context.name + '/package.json', context);
+
+        this.fs.copy(this.sourceRoot() + '/tslint.json', context.name + '/tslint.json');
+
+        this.extensionConfig.installDependencies = true;
+    }
+
+    // Write Command Extension (F#)
+    _writingCommandFs() {
         let context = this.extensionConfig;
 
         this.fs.copy(this.sourceRoot() + '/vscode', context.name + '/.vscode');
