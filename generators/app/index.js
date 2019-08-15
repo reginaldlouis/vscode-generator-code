@@ -694,7 +694,7 @@ module.exports = class extends Generator {
         let context = this.extensionConfig;
 
         this.fs.copy(this.sourceRoot() + '/vscode', context.name + '/.vscode');
-        this.fs.copy(this.sourceRoot() + '/src/test', context.name + '/src/test');
+        // this.fs.copy(this.sourceRoot() + '/src/test', context.name + '/src/test');
 
         this.fs.copy(this.sourceRoot() + '/vscodeignore', context.name + '/.vscodeignore');
         if (this.extensionConfig.gitInit) {
@@ -704,8 +704,10 @@ module.exports = class extends Generator {
         this.fs.copyTpl(this.sourceRoot() + '/CHANGELOG.md', context.name + '/CHANGELOG.md', context);
         this.fs.copyTpl(this.sourceRoot() + '/vsc-extension-quickstart.md', context.name + '/vsc-extension-quickstart.md', context);
         this.fs.copyTpl(this.sourceRoot() + '/tsconfig.json', context.name + '/tsconfig.json', context);
+        this.fs.copyTpl(this.sourceRoot() + '/splitter.config.js', context.name + '/splitter.config.js', context);
 
-        this.fs.copyTpl(this.sourceRoot() + '/src/extension.ts', context.name + '/src/extension.ts', context);
+        this.fs.copyTpl(this.sourceRoot() + '/src/Extension.fsproj', context.name + '/src/Extension.fsproj', context);
+        this.fs.copyTpl(this.sourceRoot() + '/src/Extension.fs', context.name + '/src/Extension.fs', context);
         this.fs.copyTpl(this.sourceRoot() + '/package.json', context.name + '/package.json', context);
 
         this.fs.copy(this.sourceRoot() + '/tslint.json', context.name + '/tslint.json');
